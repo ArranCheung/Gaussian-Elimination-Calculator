@@ -39,7 +39,6 @@ namespace guassian_elimination_calculator
             }
 
             solve();
-            check();
         }
 
         public void set_one(int x, int y)
@@ -119,112 +118,6 @@ namespace guassian_elimination_calculator
 
                 currentValue = currentValue / unknownValue;
                 keyValuePairs[unknown] = currentValue;
-            }
-        }
-
-        public void check()
-        {
-            var symbols = new List<char> { '=', '+', '-' };
-            var listOfInts = new List<float>();
-            var listOfOps = new List<char>();
-            string output = "";
-            string original = checkEq;
-
-            foreach (char item in checkEq)
-            {
-                if (symbols.Contains(item))
-                {
-                    listOfOps.Add(item);
-
-                    if (item == '=')
-                    {
-                        original = original.Substring(1, original.Length - 1);
-                        listOfInts.Add(Convert.ToInt32(original));
-                        break;
-                    }
-
-                    if (output != "")
-                    {
-                        try
-                        {
-                            listOfInts.Add(Convert.ToInt32(output));
-                            output = "";
-                        }
-                        catch { }
-                    }
-                    original = original.Substring(output.Length + 1, original.Length - output.Length - 1);
-                    continue;
-                }
-
-                string addition = item.ToString();
-
-                if (keyValuePairs.Keys.Contains(addition))
-                {
-                    if (output != "")
-                    {
-                        listOfInts.Add(Convert.ToInt32(output));
-                        listOfInts.Add(keyValuePairs[addition]);
-                        output = "";
-                        listOfOps.Add('x');
-                    }
-                    else
-                    {
-                        listOfInts.Add(keyValuePairs[addition]);
-                    }
-                    original = original.Substring(1, original.Length - 1);
-
-                    continue;
-                }
-
-                output += addition;
-                original = original.Substring(1, original.Length - 1);
-            }
-            listOfInts.RemoveAt(listOfInts.Count - 1);
-
-            // evaluating the equation to give an answer
-
-            float finalAnswer = Convert.ToInt32(checkEq.Substring(checkEq.IndexOf('=') + 1, checkEq.Length - 1 - checkEq.IndexOf('=')));
-
-            for (int i = 0; i < listOfOps.Count; i++)
-            {
-                if (listOfOps[i] == 'x')
-                {
-                    listOfInts[i] = listOfInts[i] * listOfInts[i + 1];
-                    listOfInts.RemoveAt(i + 1);
-                    listOfOps.RemoveAt(i);
-                    i--;
-                }
-            }
-
-            while (listOfOps.Count > 0)
-            {
-                float results = 0;
-
-                switch (listOfOps[0])
-                {
-                    case '+':
-                        results = listOfInts[0] + listOfInts[1];
-                        break;
-                    case '-':
-                        results = listOfInts[0] - listOfInts[1];
-                        break;
-                    case '=':
-                        if (Math.Round(listOfInts[0], 2) == Math.Round(finalAnswer, 2))
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("Valid solutions found\n");
-                            Console.ResetColor();
-                            return;
-                        }
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("No solutions calculated");
-                        Console.ResetColor();
-                        return;
-                }
-
-                listOfInts[0] = results;
-                listOfInts.RemoveAt(1);
-                listOfOps.RemoveAt(0);
             }
         }
 
